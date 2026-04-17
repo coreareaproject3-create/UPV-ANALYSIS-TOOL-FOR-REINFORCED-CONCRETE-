@@ -566,11 +566,19 @@ export default function App() {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name: tempName, email: tempEmail }),
                       });
-                      if (response.ok) {
-                        showToast("Technical Guidelines transmitted to your email");
+                      const data = await response.json();
+                      if (response.ok && data.success) {
+                        if (data.warning) {
+                          showToast(data.warning, "warning");
+                        } else {
+                          showToast("Technical Guidelines transmitted to your email", "success");
+                        }
+                      } else {
+                        showToast(data.message || data.error || "Email delivery failed", "error");
                       }
                     } catch (error) {
                       console.error("Failed to trigger welcome email:", error);
+                      showToast("Could not connect to email service", "error");
                     } finally {
                       setIsLoggingIn(false);
                     }
