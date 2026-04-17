@@ -128,11 +128,8 @@ app.post("/api/welcome-email", async (req, res) => {
     console.log("[Server] PDF generated");
 
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      service: 'gmail',
       auth: { user, pass },
-      connectionTimeout: 10000,
     });
 
     const mailOptions = {
