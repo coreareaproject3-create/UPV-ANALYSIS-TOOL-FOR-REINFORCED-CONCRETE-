@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  /* Concrete Theme Colors */
+  --color-dash-bg: #9ea0a3; /* Concrete Base */
+  --color-dash-surface: #f3f4f6; /* Polished Concrete / Light */
+  --color-dash-ink: #1f2937; /* Rebar Dark */
+  --color-dash-line: #4b5563; /* Mortar / Joints */
+  --color-dash-accent: #2563eb;
+  --color-dash-success: #065f46;
+  --color-dash-info: #1e3a8a;
+  --color-dash-warning: #92400e;
+  --color-dash-error: #991b1b;
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased bg-dash-bg text-dash-ink relative;
+  }
+}
+
+@layer utilities {
+  .concrete-layer {
+    background-image: 
+      linear-gradient(rgba(158, 160, 163, 0.9), rgba(158, 160, 163, 0.9)),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+    opacity: 1;
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .blueprint-grid {
+    background-size: 40px 40px;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .scan-line {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--color-dash-accent), transparent);
+    position: absolute;
+    top: -2px;
+    left: 0;
+    animation: scan 3s linear infinite;
+    opacity: 0.5;
+  }
+
+  @keyframes scan {
+    0% { top: 0% }
+    100% { top: 100% }
+  }
+
+  .digital-flicker {
+    animation: flicker 4s linear infinite;
+  }
+
+  @keyframes flicker {
+    0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% { opacity: 1; }
+    20%, 21.999%, 63%, 63.999%, 65%, 69.999% { opacity: 0.4; }
+  }
+}
+
+@layer components {
+  .metric-card {
+    @apply bg-white p-5 rounded-none border-2 border-dash-line shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] relative overflow-hidden;
+  }
+  
+  .input-label {
+    @apply text-[11px] font-bold uppercase text-slate-700 mb-2 block tracking-wider;
+  }
+  
+  .dash-input {
+    @apply w-full p-2.5 bg-white border-2 border-dash-line rounded-none font-mono text-sm focus:outline-none focus:border-dash-accent focus:ring-4 focus:ring-dash-accent/10 focus:shadow-[0_0_20px_rgba(37,99,235,0.15)] transition-all duration-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)];
+  }
+}
