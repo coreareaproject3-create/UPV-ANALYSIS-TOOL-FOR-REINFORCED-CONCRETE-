@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Calculator, 
@@ -131,85 +131,112 @@ const VisualGuide = ({ method }: { method: CorrectionMethod }) => {
 const UPVWaveAnimation = () => {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
-      {/* Transducer - Transmitter (Left) - Round Type */}
-      <div className="absolute left-10 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4">
-        <div className="w-24 h-24 rounded-full bg-slate-900 border-4 border-dash-line flex items-center justify-center relative shadow-[0_0_20px_rgba(0,0,0,0.3)] group">
-          <div className="absolute inset-2 rounded-full border border-white/10" />
-          <div className="absolute -right-4 w-6 h-10 bg-slate-800 border-y-4 border-r-4 border-dash-line rounded-r-md" />
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] font-black text-white uppercase tracking-tighter mb-1">TX-01</span>
-            <div className="w-8 h-1 bg-dash-accent/50 animate-pulse rounded-full" />
+      {/* Transducer - Transmitter (Left) */}
+      <div className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-6">
+        <div className="w-28 h-28 rounded-full bg-slate-900 border-4 border-dash-line flex flex-col items-center justify-center relative shadow-[0_0_30px_rgba(59,130,246,0.3)] group">
+          <div className="absolute inset-2 rounded-full border border-white/5" />
+          <div className="absolute -right-4 w-6 h-12 bg-slate-800 border-y-4 border-r-4 border-dash-line rounded-r-md shadow-lg" />
+          
+          <div className="flex flex-col items-center text-center px-2">
+            <span className="text-[10px] font-black text-white leading-none uppercase tracking-tighter mb-1">Transmission</span>
+            <span className="text-[8px] font-bold text-dash-accent/80 uppercase">Probe</span>
           </div>
-        </div>
-        <div className="w-3 h-3 rounded-full bg-blue-500 animate-ping shadow-[0_0_15px_rgba(59,130,246,0.8)]" />
-      </div>
-
-      {/* Transducer - Receiver (Right) - Round Type */}
-      <div className="absolute right-10 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4">
-        <div className="w-24 h-24 rounded-full bg-slate-900 border-4 border-dash-line flex items-center justify-center relative shadow-[0_0_20px_rgba(0,0,0,0.3)]">
-          <div className="absolute inset-2 rounded-full border border-white/10" />
-          <div className="absolute -left-4 w-6 h-10 bg-slate-800 border-y-4 border-l-4 border-dash-line rounded-l-md" />
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] font-black text-white uppercase tracking-tighter mb-1">RX-01</span>
-            <div className="w-8 h-1 bg-green-500/50 rounded-full" />
-          </div>
-        </div>
-        <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)]" />
-      </div>
-
-      {/* Propagating ECG-style Horizontal Wave */}
-      <div className="absolute top-1/2 left-[180px] right-[180px] h-32 -translate-y-1/2 overflow-hidden opacity-50">
-        <svg viewBox="0 0 1000 120" preserveAspectRatio="none" className="w-[200%] h-full">
-          <motion.path
-            d="M 0 60 L 50 60 L 60 40 L 80 80 L 90 60 L 140 60 L 150 50 L 160 70 L 170 60 L 220 60 L 230 20 L 250 100 L 260 60 L 310 60 L 320 50 L 330 70 L 340 60 L 400 60 L 410 40 L 430 80 L 440 60 L 500 60"
-            fill="none"
-            stroke="#3b82f6"
-            strokeWidth="3"
-            strokeLinejoin="round"
-            strokeDasharray="500"
-            initial={{ strokeDashoffset: 500 }}
-            animate={{ strokeDashoffset: [-500, 500] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          <div className="mt-2 w-10 h-1 bg-dash-accent/40 animate-pulse rounded-full" />
+          
+          {/* Signal Emitter Pings */}
+          <motion.div 
+            animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+            className="absolute inset-0 rounded-full border-2 border-dash-accent/30"
           />
-        </svg>
+        </div>
+        <div className="w-4 h-4 rounded-full bg-blue-500 animate-pulse shadow-[0_0_20px_rgba(59,130,246,1)]" />
+      </div>
+
+      {/* Transducer - Receiver (Right) */}
+      <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-6">
+        <div className="w-28 h-28 rounded-full bg-slate-900 border-4 border-dash-line flex flex-col items-center justify-center relative shadow-[0_0_30px_rgba(34,197,94,0.3)] group">
+          <div className="absolute inset-2 rounded-full border border-white/5" />
+          <div className="absolute -left-4 w-6 h-12 bg-slate-800 border-y-4 border-l-4 border-dash-line rounded-l-md shadow-lg" />
+          
+          <div className="flex flex-col items-center text-center px-2">
+            <span className="text-[10px] font-black text-white leading-none uppercase tracking-tighter mb-1">Receiving</span>
+            <span className="text-[8px] font-bold text-green-500/80 uppercase">Probe</span>
+          </div>
+          <div className="mt-2 w-10 h-1 bg-green-500/40 rounded-full" />
+
+          {/* Signal Reception Pings */}
+          <motion.div 
+            animate={{ scale: [0.8, 1], opacity: [0, 0.4, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeIn", delay: 1 }}
+            className="absolute inset-0 rounded-full border-2 border-green-500/30"
+          />
+        </div>
+        <div className="w-4 h-4 rounded-full bg-green-500 shadow-[0_0_20px_rgba(34,197,94,1)]" />
+      </div>
+
+      {/* Travelling Signal Pulse (Left to Right) */}
+      <div className="absolute top-1/2 left-[200px] right-[200px] h-20 -translate-y-1/2 overflow-hidden">
+        <div className="w-full h-full relative">
+          {/* Constant Signal Line */}
+          <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-white/5 -translate-y-1/2" />
+          
+          <svg viewBox="0 0 1000 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
+            {/* The actual pulse wave */}
+            <motion.path
+              d="M 0 50 L 50 50 L 70 20 L 90 80 L 110 50 L 500 50"
+              fill="none"
+              stroke="#3b82f6"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={{ x: "-100%" }}
+              animate={{ x: "120%" }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                ease: "linear",
+                times: [0, 1]
+              }}
+              style={{ filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.8))' }}
+            />
+          </svg>
+        </div>
       </div>
       
-      {/* Scattering Physics (Reflection when hitting central card) */}
-      <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-[500px] h-[500px]">
-        {/* Top Scattered Pulse */}
+      {/* Central Scattering Geometry */}
+      <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px]">
+        {/* Vertical Pulse Components (Reflection / Diffraction simulation) */}
         <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 w-32 h-2 bg-dash-accent/30 blur-lg"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 w-48 h-1 bg-dash-accent/20 blur-xl"
           animate={{ 
-            y: [0, -280],
-            opacity: [0, 0.6, 0],
-            scaleX: [1, 1.5],
-            rotate: [-5, 5]
+            y: [0, -300],
+            opacity: [0, 0.8, 0],
+            scaleX: [0.5, 2],
           }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+          transition={{ duration: 2, repeat: Infinity, ease: "circOut" }}
         />
-        {/* Bottom Scattered Pulse */}
         <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 w-32 h-2 bg-dash-accent/30 blur-lg"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 w-48 h-1 bg-dash-accent/20 blur-xl"
           animate={{ 
-            y: [0, 280],
-            opacity: [0, 0.6, 0],
-            scaleX: [1, 1.5],
-            rotate: [5, -5]
+            y: [0, 300],
+            opacity: [0, 0.8, 0],
+            scaleX: [0.5, 2],
           }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+          transition={{ duration: 2, repeat: Infinity, ease: "circOut" }}
         />
       </div>
 
-      {/* Impact Indicators with synced delay */}
+      {/* Sync impact glow effects */}
       <motion.div 
-        animate={{ opacity: [0.1, 0.6, 0.1], scale: [1, 1.2, 1] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-        className="absolute left-[160px] top-1/2 -translate-y-1/2 w-8 h-40 bg-blue-500/10 blur-xl rounded-full"
+        animate={{ opacity: [0, 0.4, 0], scale: [0.8, 1.1, 1] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-[160px] top-1/2 -translate-y-1/2 w-16 h-16 bg-blue-500/20 blur-2xl rounded-full"
       />
       <motion.div 
-        animate={{ opacity: [0.1, 0.6, 0.1], scale: [1, 1.2, 1] }}
-        transition={{ duration: 1.5, repeat: Infinity, delay: 0.75 }}
-        className="absolute right-[160px] top-1/2 -translate-y-1/2 w-8 h-40 bg-green-500/10 blur-xl rounded-full"
+        animate={{ opacity: [0, 0.4, 0], scale: [0.8, 1.1, 1] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+        className="absolute right-[160px] top-1/2 -translate-y-1/2 w-16 h-16 bg-green-500/20 blur-2xl rounded-full"
       />
     </div>
   );
@@ -227,14 +254,14 @@ export default function App() {
   const [barDiameter, setBarDiameter] = useState<number>(12);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
 
   // Batch Mode States
   const [isBatchMode, setIsBatchMode] = useState(false);
   const [batchData, setBatchData] = useState<BatchReading[]>([]);
   const [currentRowLocation, setCurrentRowLocation] = useState('');
 
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   };
@@ -553,8 +580,9 @@ export default function App() {
               <div className="mb-8 text-center text-dash-ink">
                 <h2 className="text-2xl font-black uppercase tracking-tighter italic">UPV Analysis Tool for Reinforced Concrete</h2>
               </div>
-              <form 
-                onSubmit={async (e) => {
+              <div className="mt-6 flex flex-col items-center gap-2">
+                <form 
+                  onSubmit={async (e) => {
                   e.preventDefault();
                   if (tempName && tempEmail) {
                     setIsLoggingIn(true);
@@ -574,7 +602,7 @@ export default function App() {
                           showToast("Technical Guidelines transmitted to your email", "success");
                         }
                       } else {
-                        showToast(data.message || data.error || "Email delivery failed", "error");
+                        showToast(data.detail || data.message || data.error || "Email delivery failed", "error");
                       }
                     } catch (error) {
                       console.error("Failed to trigger welcome email:", error);
@@ -624,11 +652,12 @@ export default function App() {
                       />
                       Initializing...
                     </>
-                  ) : "ENTER TOOL"}
+                  ) : "Launch analysis"}
                 </button>
               </form>
             </div>
-          </motion.div>
+          </div>
+        </motion.div>
         ) : (
           <motion.div
             key="dashboard"
@@ -799,7 +828,7 @@ export default function App() {
               <div className="mt-auto p-4 bg-dash-bg font-bold border-2 border-dash-line text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
                 <h3 className="text-[10px] font-black uppercase mb-2 tracking-widest bg-white text-dash-ink px-1 w-fit">Reference Manual</h3>
                 <p className="text-[10px] leading-relaxed">
-                  Steel Velocity (Vs) is fixed at 5.2 km/s. Standards: IS 516 : 2019 (Part 5), BS 1881:1986.
+                  Steel Velocity (Vs) is fixed at 5.2 km/s. Standards: IS 516 : 2019 (Part 5).
                 </p>
               </div>
             </aside>
@@ -1119,7 +1148,7 @@ export default function App() {
           <div className="flex flex-col items-end text-right">
             <span className="text-white font-black uppercase tracking-widest mb-1 opacity-100">System Information</span>
             <span>Version 2.4.0 (TCE-CIVIL)</span>
-            <span>Standards: IS 516 (Part 5), BS 1881</span>
+            <span>Standards: IS 516 (Part 5)</span>
           </div>
         </div>
 
@@ -1131,10 +1160,14 @@ export default function App() {
               exit={{ opacity: 0, scale: 0.9 }}
               className={cn(
                 "fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 border-4 border-dash-line font-black uppercase tracking-widest text-[11px] shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)] flex items-center gap-3",
-                toast.type === 'success' ? "bg-dash-success text-white" : "bg-dash-error text-white"
+                toast.type === 'success' ? "bg-dash-success text-white" : 
+                toast.type === 'warning' ? "bg-dash-warning text-dash-ink" : 
+                "bg-dash-error text-white"
               )}
             >
-              {toast.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+              {toast.type === 'success' ? <CheckCircle2 size={16} /> : 
+               toast.type === 'warning' ? <Info size={16} /> : 
+               <AlertCircle size={16} />}
               {toast.message}
             </motion.div>
           )}

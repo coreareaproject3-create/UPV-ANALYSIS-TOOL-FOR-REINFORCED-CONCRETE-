@@ -96,7 +96,7 @@ app.get("/api/health", (req, res) => {
     timestamp: new Date().toISOString(),
     env: process.env.NODE_ENV,
     secrets: {
-      user: !!process.env.EMAIL_USER,
+      user: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.substring(0, 3)}...` : false,
       pass: !!process.env.EMAIL_PASS
     }
   });
@@ -130,6 +130,9 @@ app.post("/api/welcome-email", async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: { user, pass },
+      pool: true, // Use pooling for better performance on serverless
+      maxConnections: 1,
+      maxMessages: 1,
     });
 
     const mailOptions = {
@@ -163,11 +166,20 @@ app.post("/api/welcome-email", async (req, res) => {
     await transporter.sendMail(mailOptions);
     console.log(`[Server] Email sent to ${email}`);
     res.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[Server] Error sending email:", error);
+    
+    let userMessage = "Internal error";
+    if (error?.code === 'EAUTH') {
+      userMessage = "Gmail login failed. Check your App Password (16 letters, no spaces).";
+    } else if (error?.code === 'ESOCKET' || error?.syscall === 'connect') {
+      userMessage = "Network error. Gmail is blocking the connection from Vercel.";
+    }
+
     res.status(500).json({ 
       error: "Service Error", 
-      message: error instanceof Error ? error.message : "Internal error" 
+      message: error?.message || "Internal error",
+      detail: userMessage
     });
   }
 });
