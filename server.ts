@@ -79,8 +79,6 @@ async function generateGuidelinesPDF(name: string): Promise<Buffer> {
       doc.fontSize(10).fillColor("#555").text("Thiagarajar College of Engineering | Civil Engineering Lab", { align: "center" });
       doc.moveDown(0.5);
       doc.fillColor("#0056B3").text("anandarao242004@gmail.com", { align: "center", underline: true });
-      doc.moveDown(0.3);
-      doc.text("anandarao@student.tce.edu", { align: "center", underline: true });
 
       doc.end();
     } catch (err) {
