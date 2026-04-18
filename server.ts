@@ -90,14 +90,36 @@ async function generateGuidelinesPDF(name: string): Promise<Buffer> {
 }
 
 // Health check endpoint
-app.get("/api/health", (req, res) => {
+app.get("/api/health", async (req, res) => {
+  let smtpStatus = "unknown";
+  
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: { 
+          user: process.env.EMAIL_USER.trim(), 
+          pass: process.env.EMAIL_PASS.replace(/\s+/g, "") 
+        },
+        connectionTimeout: 5000,
+      });
+      await transporter.verify();
+      smtpStatus = "verified";
+    } catch (err: any) {
+      smtpStatus = `failed: ${err?.message || "unknown"}`;
+    }
+  }
+
   res.json({ 
     status: "healthy", 
     timestamp: new Date().toISOString(),
     env: process.env.NODE_ENV,
     secrets: {
       user: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.substring(0, 3)}...` : false,
-      pass: !!process.env.EMAIL_PASS
+      pass: !!process.env.EMAIL_PASS,
+      smtp: smtpStatus
     }
   });
 });
@@ -128,11 +150,16 @@ app.post("/api/welcome-email", async (req, res) => {
     console.log("[Server] PDF generated");
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true, // use TLS
       auth: { user, pass },
-      pool: true, // Use pooling for better performance on serverless
+      pool: true,
       maxConnections: 1,
       maxMessages: 1,
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
 
     const mailOptions = {

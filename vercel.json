@@ -20,5 +20,10 @@
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ]
+  ],
+  "functions": {
+    "server.ts": {
+      "maxDuration": 60
+    }
+  }
 }
